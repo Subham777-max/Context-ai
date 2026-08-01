@@ -1,14 +1,13 @@
 import express from "express";
 import morgan from "morgan";
-
+import router from "./routes/app.routes.js";
 const app = express();
 
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => {
-  res.send("Auth module is running");
-});
+
+app.use("/",router);
 
 export default app;
