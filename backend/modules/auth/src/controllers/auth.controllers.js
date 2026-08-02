@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
 import config from "../config/config.js";
+import redis from "../../../../shared/redis/redis.js";
 
 const signToken = (user) => {
 	return jwt.sign(
@@ -34,6 +35,8 @@ export const register = async (req, res) => {
 
 		const token = signToken(user);
 
+		await redis.set(`token-${token}`, JSON.stringify(sanitizeUser(user)), "EX", 7 * 24 * 60 * 60);
+
         res.cookie("token", token);
 
 		return res.status(201).json({
@@ -62,6 +65,8 @@ export const login = async (req, res) => {
 
 		const token = signToken(user);
 
+		await redis.set(`token-${token}`, JSON.stringify(sanitizeUser(user)), "EX", 7 * 24 * 60 * 60);
+
         res.cookie("token", token);
 
 		return res.status(200).json({
@@ -73,3 +78,16 @@ export const login = async (req, res) => {
 	}
 };
 
+export const logout = async (req, res) => {
+	try {
+		const token = req.cookies.token;
+		if (!token) {
+			return res.status(400).json({ message: "No token provided" });
+		}
+		await redis.del(`token-${token}`);
+		res.clearCookie("token");
+		return res.status(200).json({ message: "Logged out successfully" });
+	} catch (error) {
+		return res.status(500).json({ message: "Internal server error" });
+	}
+};
