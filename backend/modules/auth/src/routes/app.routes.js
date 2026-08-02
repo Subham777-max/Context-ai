@@ -19,10 +19,10 @@ router.post("/register", registerValidation, handleValidationErrors, register);
 router.post("/login", loginValidation, handleValidationErrors, login);
 
 /**
- * @route POST /api/auth/logout
+ * @route GET /api/auth/logout
  * @desc Logout a user
  * @access Public
  */
-router.post("/logout", logout);
+router.get("/logout", logout);
 
 export default router;
