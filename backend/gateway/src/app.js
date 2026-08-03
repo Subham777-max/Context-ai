@@ -4,6 +4,8 @@ import cookieParser from "cookie-parser";
 import proxy from "express-http-proxy";
 import config from "./config/config.js";
 import cors from "cors";
+import { protect } from "./middleware/auth.middleware.js";
+import { getCurrentUser } from "./controllers/user.controller.js";
 
 const app = express();
 
@@ -19,6 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 
 //Routes
 app.use("/api/auth",proxy(config.authServiceUrl));
+app.get("/api/me",protect,getCurrentUser);
 
 
 app.get("/", (req, res) => {
