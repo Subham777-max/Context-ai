@@ -6,6 +6,7 @@ import config from "./config/config.js";
 import cors from "cors";
 import { protect } from "./middleware/auth.middleware.js";
 import { getCurrentUser } from "./controllers/user.controller.js";
+import proxyWithHeaders from "./utils/proxyWithHeaders.js";
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 //Routes
 app.use("/api/auth",proxy(config.authServiceUrl));
 app.get("/api/me",protect,getCurrentUser);
+app.get("/api/chat",protect,proxyWithHeaders(config.chatServiceUrl));
 
 
 app.get("/", (req, res) => {
